@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trip Planner</title>
+    <!-- Link to FontAwesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        /* General Styling */
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            color: #333;
+            position: relative;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Background Video Styling */
+        .video-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .video-background video {
+            object-fit: cover;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Navigation Bar */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: rgba(0, 0, 0, 0.85); /* Darker background */
+            padding: 20px 50px;
+            color: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            transition: background-color 0.3s ease;
+        }
+
+        nav h1 {
+            margin: 0;
+            font-size: 32px;
+            letter-spacing: 2px;
+            font-weight: 600;
+            color: #FFD700; /* Gold color */
+            transition: color 0.3s ease;
+        }
+
+        nav h1:hover {
+            color: #fff; /* White color on hover */
+        }
+
+        /* Profile Icon Styling */
+        .profile-container {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            cursor: pointer;
+            z-index: 999;
+        }
+
+        .profile-icon {
+            font-size: 30px;
+            color: white;
+            background: #4CAF50; /* Green background */
+            padding: 10px;
+            border-radius: 50%;
+            border: 2px solid #fff;
+            transition: transform 0.3s ease;
+        }
+
+        .profile-icon:hover {
+            transform: scale(1.1); /* Slight scale-up effect */
+        }
+
+        /* Profile Dropdown Styling */
+        .profile-dropdown {
+            display: none;
+            position: absolute;
+            top: 50px; /* Adjust position below the icon */
+            left: -60px; /* Moved the dropdown to the left */
+            background-color: white;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            overflow: hidden;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        .profile-dropdown a {
+            display: block;
+            padding: 12px 20px;
+            text-decoration: none;
+            color: #333;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+
+        .profile-dropdown a:hover {
+            background-color: #f1f1f1;
+        }
+
+        .profile-container.active .profile-dropdown {
+            display: block;
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Form Container */
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 10;
+        }
+
+        h1 {
+            text-align: center;
+            color: #555;
+            font-size: 28px;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        /* Form Elements */
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            margin: 15px 0 8px;
+            font-weight: bold;
+            color: #4CAF50;
+        }
+
+        input, select, textarea, button {
+            padding: 14px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            padding: 14px;
+            border-radius: 8px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        button:hover {
+            background-color: #45a049;
+            transform: scale(1.05);
+        }
+
+        button:active {
+            background-color: #388e3c;
+        }
+
+        /* Popup Overlay */
+        .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .popup-table {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            max-width: 400px;
+            width: 100%;
+            max-height: 70%;
+            overflow-y: auto;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .popup-table h3 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #4CAF50;
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .checkbox-group label {
+            display: flex;
+            align-items: center;
+            font-size: 16px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            margin-right: 10px;
+            transform: scale(1.2);
+        }
+
+        .popup-buttons {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+/* Flash Messages */
+.flash-message {
+            background-color: #f44336; /* Red */
+            color: white;
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+        }
+
+        .flash-message.success {
+            background-color: #4CAF50; /* Green */
+        }
+
+        .flash-message.info {
+            background-color: #2196F3; /* Blue */
+        }
+
+        .flash-message.warning {
+            background-color: #FF9800; /* Orange */
+        }
+    </style>
+</head>
+<body>
+    <!-- Background Video -->
+    <div class="video-background">
+        <video autoplay muted loop>
+            <source src="{{ url_for('static', filename='trip_planner.mp4') }}" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+    </div>
+
+    <!-- Navigation Bar -->
+    <nav>
+        <h1>Trip Planner</h1>
+    </nav>
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        <div>
+            {% for category, message in messages %}
+                <div class="flash-message {{ category }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    {% endwith %}
+    
+    <!-- Profile Icon and Dropdown -->
+    <div class="profile-container" id="profile-container">
+        <div class="profile-icon">
+            <i class="fas fa-user"></i>
+        </div>
+        <div class="profile-dropdown">
+            <a href="#" onclick="openChangePasswordPopup()">Change Password</a>
+            <a href="/logout">Logout</a>
+        </div>
+    </div>
+
+    <!-- Change Password Popup -->
+    <div id="change-password-popup" class="popup-overlay">
+        <div class="popup-table">
+            <h3>Change Password</h3>
+            <form id="change-password-form" action="/change-password" method="POST">
+                <label for="old-password">Old Password:</label>
+                <input type="password" id="old-password" name="old-password" required>
+
+                <label for="new-password">New Password:</label>
+                <input type="password" id="new-password" name="new-password" required>
+
+                <label for="confirm-password">Confirm New Password:</label>
+                <input type="password" id="confirm-password" name="confirm-password" required>
+
+                <button type="submit">Change Password</button>
+            </form>
+            <div id="message"></div>
+            <button type="button" onclick="closeChangePasswordPopup()">Cancel</button>
+        </div>
+    </div>
+
+    <!-- Main Form Container -->
+    <div class="container">
+        
+
+        <h1>Plan Your Trip</h1>
+        <form action="#" method="POST" onsubmit="validateForm(event)">
+            <label for="start-date">Start Date:</label>
+            <input type="date" id="start-date" name="start-date" required>
+
+            <label for="end-date">End Date:</label>
+            <input type="date" id="end-date" name="end-date" required>
+
+            <label for="trip-type">Type of trip:</label>
+            <select id="trip-type" name="trip-type" required>
+                <option value="temples only">Temples only</option>
+                <option value="tour">Tour</option>
+                <option value="both">Both</option>
+            </select>
+
+            <label for="starting-point">Starting Point:</label>
+            <input type="text" id="starting-point" name="starting-point" required>
+
+            <label for="ending-point">Select places to visit:</label>
+            <input type="text" id="ending-point" placeholder="select them below" name="ending-point" readonly>
+            <button type="button" onclick="togglePopup()">Select Destination</button>
+
+            <label for="companion-type">Companion Type:</label>
+            <select id="companion-type" name="companion-type" required>
+                <option value="family">Family</option>
+                <option value="friends">Friends</option>
+                <option value="solo">Solo</option>
+            </select>
+
+            <label for="total-people">Total Number of People:</label>
+            <input type="number" id="total-people" name="total-people" min="1" required>
+
+            <label for="budget">Budget:</label>
+            <input type="number" id="budget" name="budget" min="0" required>
+
+            <label for="preferences">Preferences:</label>
+            <textarea id="preferences" name="preferences" placeholder="Enter your preferences here..." rows="4"></textarea>
+
+            <button type="submit">Plan My Trip</button>
+        </form>
+    </div>
+
+    <!-- Popup Overlay for Destinations -->
+    <div id="popup-overlay" class="popup-overlay">
+        <div class="popup-table">
+            <h3>Select Destinations</h3>
+            <div class="checkbox-group">
+                <label><input type="checkbox" value="Tirupati"> Tirupati</label>
+                <label><input type="checkbox" value="Chennai"> Chennai</label>
+                <label><input type="checkbox" value="Coimbatore"> Coimbatore</label>
+                <label><input type="checkbox" value="Ooty"> Ooty</label>
+                <label><input type="checkbox" value="Arunachalam"> Arunachalam</label>
+                <label><input type="checkbox" value="Araku"> Araku</label>
+                <label><input type="checkbox" value="Amaravati"> Amaravati</label>
+                <label><input type="checkbox" value="Vijayawada"> Vijayawada</label>
+                <label><input type="checkbox" value="Kerala"> Kerala</label>
+            </div>
+            <div class="popup-buttons">
+                <button type="button" onclick="closePopupAndSave()">Select</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Profile dropdown toggle
+        const profileContainer = document.getElementById('profile-container');
+
+        profileContainer.addEventListener('click', (event) => {
+            event.stopPropagation(); // Prevent click event from propagating
+            profileContainer.classList.toggle('active');
+        });
+
+        // Close the dropdown when clicking outside
+        document.addEventListener('click', (event) => {
+            if (!profileContainer.contains(event.target)) {
+                profileContainer.classList.remove('active');
+            }
+        });
+
+        // Toggle popup for selecting destinations
+        function togglePopup() {
+            document.getElementById('popup-overlay').style.display = 'flex';
+        }
+
+        // Close popup and save selected destinations
+        function closePopupAndSave() {
+            let selectedDestinations = [];
+            const checkboxes = document.querySelectorAll('.popup-table input[type="checkbox"]:checked');
+            checkboxes.forEach(checkbox => selectedDestinations.push(checkbox.value));
+            document.getElementById('ending-point').value = selectedDestinations.join(', ');
+            document.getElementById('popup-overlay').style.display = 'none';
+        }
+
+        // Form validation
+        function validateForm(event) {
+            const startDate = new Date(document.getElementById('start-date').value);
+            const endDate = new Date(document.getElementById('end-date').value);
+
+            if (startDate > endDate) {
+                alert("End date must be after start date.");
+                event.preventDefault();
+            }
+        }
+
+        // Change password popup functions
+        function openChangePasswordPopup() {
+            document.getElementById('change-password-popup').style.display = 'flex';
+        }
+
+        function closeChangePasswordPopup() {
+            document.getElementById('change-password-popup').style.display = 'none';
+        }
+    </script>
+</body>
+</html>

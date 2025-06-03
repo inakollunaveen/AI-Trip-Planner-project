@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trip Planner</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: white;
+        }
+        .video-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+        .video-background iframe {
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+        header {
+            background: rgba(76, 175, 80, 0.8);
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        nav {
+            background-color: rgba(51, 51, 51, 0.8);
+            overflow: hidden;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        nav a {
+            float: left;
+            display: block;
+            color: white;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        nav a:hover {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .container {
+            padding: 2rem;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+        }
+        .place-card {
+            position: relative;
+            overflow: hidden;
+            border-radius: 8px;
+            background-size: cover;
+            background-position: center;
+            height: 200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            color: white;
+            padding: 1rem;
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+        }
+        .place-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 0;
+            transition: background 0.3s;
+        }
+        .place-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2);
+        }
+        .place-card:hover::after {
+            background: rgba(0, 0, 0, 0.6);
+        }
+        .place-card h3,
+        .place-card p,
+        .place-card button {
+            z-index: 1;
+            position: relative;
+        }
+        .place-card h3 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+        .place-card p {
+            margin: 0.5rem 0 1rem;
+        }
+        .place-card button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .place-card button:hover {
+            background-color: #45a049;
+        }
+        footer {
+            background-color: rgba(51, 51, 51, 0.8);
+            color: white;
+            text-align: center;
+            padding: 1rem;
+            margin-top: 2rem;
+        }
+        #contact-us-section {
+            background-color: rgba(51, 51, 51, 0.9);
+            padding: 2rem;
+            margin-top: 1rem;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Welcome to Trip Planner</h1>
+        <p>Your journey begins here!</p>
+    </header>
+    <nav>
+        <a href="/">Home</a>
+        <a href="{{ url_for('login') }}">Login</a> <!-- Redirects to the login page -->
+        <a href="{{ url_for('signup') }}">Signup</a>
+        <a href="javascript:void(0);" onclick="scrollToContactUs()">Contact Us</a>
+    </nav>
+
+    <div class="container">
+        <div class="place-card" style="background-image: url('https://navbharattimes.indiatimes.com/thumb/113549722/mysterious-things-about-tirupati-balaji-temple-you-will-amazed-with-the-facts-113549722.jpg?imgsize=225938&width=1600&height=900&resizemode=75');">
+            <h3>Tirupati</h3>
+            <p>Explore the spiritual town of Tirupati, famous for its ancient temples and divine atmosphere.</p>
+            <button onclick="window.location.href='{{ url_for('login') }}?destination=Tirupati'">Plan Trip</button>
+        </div>
+        <div class="place-card" style="background-image: url('https://s3.india.com/wp-content/uploads/2024/05/Feature-Image_-Ooty-1.jpg');">
+            <h3>Ooty</h3>
+            <p>Explore the beautiful hill station of Ooty, known for its lush tea gardens and stunning views.</p>
+            <button onclick="window.location.href='{{ url_for('login') }}?destination=Ooty'">Plan Trip</button>
+        </div>
+        <div class="place-card" style="background-image: url('https://th-i.thgim.com/public/news/cities/Visakhapatnam/zboaep/article35181502.ece/alternates/FREE_1200/07-VZ-TOURISM');">
+            <h3>Visakhapatnam</h3>
+            <p>Enjoy the beautiful beaches and rich cultural heritage of Visakhapatnam.</p>
+            <button onclick="window.location.href='{{ url_for('login') }}?destination=Visakhapatnam'">Plan Trip</button>
+        </div>
+        <div class="place-card" style="background-image: url('https://static.toiimg.com/thumb/107202761/Adiyogi-Shiva-Statue.jpg?width=1200&height=900&resizemode=75');">
+            <h3>Coimbatore</h3>
+            <p>Experience the blend of tradition and modernity in Coimbatore.</p>
+            <button onclick="window.location.href='{{ url_for('login') }}?destination=Coimbatore'">Plan Trip</button>
+        </div>
+        <div class="place-card" style="background-image: url('https://www.india.com/wp-content/uploads/2024/06/Calangute-Beach-1.jpg');">
+            <h3>Goa</h3>
+            <p>Dive into the vibrant nightlife, beaches, and Portuguese heritage of Goa.</p>
+            <button onclick="window.location.href='{{ url_for('login') }}?destination=Goa'">Plan Trip</button>
+        </div>
+        <div class="place-card" style="background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRoh2Uo8a6WatotdACiMbv7GVsM8VeyNagawg&s');">
+            <h3>Araku</h3>
+            <p>Discover the lush valleys and coffee plantations of Araku, a picturesque hill station.</p>
+            <button onclick="window.location.href='{{ url_for('login') }}?destination=Araku'">Plan Trip</button>
+        </div>
+    </div>
+
+    <div id="contact-us-section">
+        <h2>Contact Us</h2>
+        <p>If you have any questions or need assistance with planning your trip, feel free to reach out!</p>
+        <p>Email: support@tripplanner.com</p>
+        <p>Phone: +123-456-7890</p>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 Trip Planner. All rights reserved.</p>
+    </footer>
+
+    <script>
+        function scrollToContactUs() {
+            const contactUsSection = document.getElementById('contact-us-section');
+            contactUsSection.scrollIntoView({ behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>

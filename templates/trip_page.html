@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trip Plan</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"> <!-- FontAwesome -->
+    <style>
+        
+        /* Navigation Bar */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: rgba(0, 0, 0, 0.85); /* Darker background */
+            padding: 20px 50px;
+            color: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            transition: background-color 0.3s ease;
+        }
+
+        nav h1 {
+            margin: 0;
+            font-size: 32px;
+            letter-spacing: 2px;
+            font-weight: 600;
+            color: #FFD700; /* Gold color */
+            transition: color 0.3s ease;
+        }
+
+        nav h1:hover {
+            color: #fff; /* White color on hover */
+        }
+
+        /* Profile Icon Styling */
+        .profile-container {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            cursor: pointer;
+            z-index: 999;
+        }
+
+        .profile-icon {
+            font-size: 30px;
+            color: white;
+            background: #4CAF50; /* Green background */
+            padding: 10px;
+            border-radius: 50%;
+            border: 2px solid #fff;
+            transition: transform 0.3s ease;
+        }
+
+        .profile-icon:hover {
+            transform: scale(1.1); /* Slight scale-up effect */
+        }
+
+        /* Profile Dropdown Styling */
+        .profile-dropdown {
+            display: none;
+            position: absolute;
+            top: 50px; /* Adjust position below the icon */
+            left: -60px; /* Moved the dropdown to the left */
+            background-color: white;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            overflow: hidden;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        .profile-dropdown a {
+            display: block;
+            padding: 12px 20px;
+            text-decoration: none;
+            color: #333;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+
+        .profile-dropdown a:hover {
+            background-color: #f1f1f1;
+        }
+
+        .profile-container.active .profile-dropdown {
+            display: block;
+            opacity: 1;
+            visibility: visible;
+        }
+
+         /* Go Back Button */
+         .go-back-button {
+            display: block;
+            margin: 20px auto;
+            padding: 12px 20px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        .go-back-button:hover {
+            background-color: #45a049;
+            transform: scale(1.05);
+        }
+
+        .go-back-button:active {
+            background-color: #388e3c;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f8f9fa;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Form Container */
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 10;
+        }
+
+        h1 {
+            text-align: center;
+            color: #555;
+            font-size: 28px;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        /* Form Elements */
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            margin: 15px 0 8px;
+            font-weight: bold;
+            color: #4CAF50;
+        }
+
+        input, select, textarea, button {
+            padding: 14px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            padding: 14px;
+            border-radius: 8px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        button:hover {
+            background-color: #45a049;
+            transform: scale(1.05);
+        }
+
+        button:active {
+            background-color: #388e3c;
+        }
+
+        /* Popup Overlay */
+        .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .popup-table {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            max-width: 400px;
+            width: 100%;
+            max-height: 70%;
+            overflow-y: auto;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .popup-table h3 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #4CAF50;
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .checkbox-group label {
+            display: flex;
+            align-items: center;
+            font-size: 16px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            margin-right: 10px;
+            transform: scale(1.2);
+        }
+
+        .popup-buttons {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .trip-plan {
+            margin-top: 20px;
+            text-align: left;
+            padding: 10px;
+            background-color: #e9ecef;
+            border-radius: 5px;
+            width: 80%;
+            max-width: 800px;
+        }
+        .trip-plan h3 {
+            margin-bottom: 10px;
+        }
+        .trip-plan ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        .trip-plan li {
+            margin-bottom: 8px;
+        }
+        .trip-plan .day-header {
+            font-weight: bold;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav>
+        <h1>Trip Planner</h1>
+    </nav>
+
+    <!-- Profile Icon and Dropdown -->
+    <div class="profile-container" id="profile-container">
+        <div class="profile-icon">
+            <i class="fas fa-user"></i>
+        </div>
+        <div class="profile-dropdown">
+            <a href="#" onclick="openChangePasswordPopup()">Change Password</a>
+            <a href="/logout">Logout</a>
+        </div>
+    </div>
+
+    <!-- Change Password Popup -->
+    <div id="change-password-popup" class="popup-overlay">
+        <div class="popup-table">
+            <h3>Change Password</h3>
+            <form id="change-password-form" action="/change-password" method="POST">
+                <label for="old-password">Old Password:</label>
+                <input type="password" id="old-password" name="old-password" required>
+
+                <label for="new-password">New Password:</label>
+                <input type="password" id="new-password" name="new-password" required>
+
+                <label for="confirm-password">Confirm New Password:</label>
+                <input type="password" id="confirm-password" name="confirm-password" required>
+
+                <button type="submit">Change Password</button>
+            </form>
+            <div id="message"></div>
+            <button type="button" onclick="closeChangePasswordPopup()">Cancel</button>
+        </div>
+    </div>
+
+    <div id="tripPlan" class="trip-plan"></div>
+
+     <!-- Go Back Button -->
+    <a href="javascript:history.back()" class="go-back-button">Go Back</a>
+    <script>
+
+                // Change password popup functions
+                function openChangePasswordPopup() {
+            document.getElementById('change-password-popup').style.display = 'flex';
+        }
+
+        function closeChangePasswordPopup() {
+            document.getElementById('change-password-popup').style.display = 'none';
+        }
+
+        // Profile dropdown toggle
+        const profileContainer = document.getElementById('profile-container');
+
+        profileContainer.addEventListener('click', (event) => {
+            event.stopPropagation(); // Prevent click event from propagating
+            profileContainer.classList.toggle('active');
+        });
+
+        // Close the dropdown when clicking outside
+        document.addEventListener('click', (event) => {
+            if (!profileContainer.contains(event.target)) {
+                profileContainer.classList.remove('active');
+            }
+        });
+
+        const tripPlan = {
+            startDate: "2025-01-04",
+            endDate: "2025-01-13",
+            days: [
+                {
+                    day: 1,
+                    travel: {
+                        mode: "Train",
+                        details: "Chennai Express (12610)",
+                        source: "Chennai Central (MAS)",
+                        destination: "Tirupati (TPTY)",
+                        departure: "6:30 AM",
+                        arrival: "9:30 AM",
+                        fare: 625,
+                        bookingLink: "https://irctc.co.in"
+                    },
+                    accommodation: [
+                        {
+                            name: "Hotel Bhimas Paradise",
+                            location: "Near Tirupati Railway Station, TP Area",
+                            contact: "+91-877-2226666",
+                            cost: 1500
+                        },
+                        {
+                            name: "Hotel Regalia",
+                            location: "Renigunta Road",
+                            contact: "+91-877-2234444",
+                            cost: 2000
+                        }
+                    ],
+                    food: {
+                        restaurant: "Mayura Veg",
+                        approxCost: 1000
+                    },
+                    attractions: [
+                        { name: "Sri Venkateswara Temple", entry: "Darshan pre-booked", bookingLink: "https://tirupatibalaji.ap.gov.in" },
+                        { name: "Kapila Theertham", entry: "Free" },
+                        { name: "Chandragiri Fort", entry: 50 }
+                    ]
+                },
+                {
+                    day: 2,
+                    travel: {
+                        mode: "Bus",
+                        details: "Private AC bus",
+                        fare: 300,
+                        departure: "7:00 AM",
+                        arrival: "11:00 AM",
+                        source: "Tirupati",
+                        destination: "Tiruvannamalai",
+                        bookingLink: "https://redbus.in"
+                    },
+                    accommodation: [
+                        {
+                            name: "Arunai Anantha Resort",
+                            location: "Chengam Road",
+                            contact: "+91-4142-222666",
+                            cost: 1500
+                        },
+                        {
+                            name: "Sri Sarvesha JS Palace",
+                            location: "Opposite Arunachaleswarar Temple",
+                            contact: "+91-4142-222111",
+                            cost: 1200
+                        }
+                    ],
+                    food: {
+                        restaurant: "Abhirami Veg",
+                        approxCost: 1000
+                    },
+                    attractions: [
+                        { name: "Arunachaleswarar Temple", entry: "Free" },
+                        { name: "Ramana Maharshi Ashram", entry: "Free" },
+                        { name: "Virupaksha Cave", entry: "Free" }
+                    ]
+                },
+                {
+                    day: 3,
+                    travel: {
+                        mode: "Train",
+                        details: "Mettupalayam Express (12671)",
+                        source: "Tiruvannamalai (TNM)",
+                        destination: "Coimbatore (CBE)",
+                        departure: "8:00 AM",
+                        arrival: "1:00 PM",
+                        fare: 500
+                    },
+                    accommodation: [
+                        { name: "Treebo Trend ESS Grande", location: "Ram Nagar", contact: "+91-9322800100", cost: 1500 },
+                        { name: "Zone by The Park", location: "Avinashi Road", contact: "+91-422-6676777", cost: 3000 }
+                    ],
+                    food: {
+                        restaurant: "Sree Annapoorna",
+                        approxCost: 1200
+                    },
+                    attractions: [
+                        { name: "Marudhamalai Temple", entry: 30 },
+                        { name: "Isha Yoga Center", entry: "Free" }
+                    ]
+                },
+                {
+                    day: 4,
+                    travel: {
+                        mode: "Toy Train",
+                        details: "Nilgiri Mountain Railway",
+                        source: "Mettupalayam (MTP)",
+                        destination: "Ooty (UAM)",
+                        departure: "9:00 AM",
+                        arrival: "12:00 PM",
+                        fare: 600
+                    },
+                    accommodation: [
+                        {
+                            name: "Sherlock Hotel",
+                            location: "Tiger Hill Road",
+                            contact: "+91-423-2440970",
+                            cost: 2000
+                        },
+                        {
+                            name: "Zostel Ooty",
+                            location: "Lovedale Junction",
+                            contact: "+91-6232897440",
+                            cost: 1200
+                        }
+                    ],
+                    food: {
+                        restaurant: "Earl's Secret",
+                        approxCost: 1200
+                    },
+                    attractions: [
+                        { name: "Ooty Botanical Gardens", entry: 50 },
+                        { name: "Ooty Lake", entry: 300 }
+                    ]
+                },
+                {
+                    day: 5,
+                    travel: {
+                        mode: "Local cab",
+                        fare: 1500
+                    },
+                    attractions: [
+                        { name: "Doddabetta Peak", entry: 10 },
+                        { name: "Rose Garden", entry: 30 },
+                        { name: "Tea Museum", entry: 100 },
+                        { name: "Pykara Lake and Falls", entry: 200 },
+                        { name: "Emerald Lake", entry: "Free" }
+                    ],
+                    food: {
+                        restaurant: "Nahar's Sidewalk Café",
+                        approxCost: 1200
+                    }
+                },
+                {
+                    day: 6,
+                    travel: {
+                        mode: "Cab",
+                        fare: 2000,
+                        source: "Ooty",
+                        destination: "Coimbatore"
+                    },
+                    accommodation: [
+                        {
+                            name: "Treebo Trend ESS Grande",
+                            location: "Ram Nagar",
+                            contact: "+91-9322800100",
+                            cost: 1500
+                        }
+                    ],
+                    food: {
+                        approxCost: 1200
+                    },
+                    attractions: [
+                        { name: "Perur Pateeswarar Temple", entry: "Free" },
+                        { name: "VOC Park & Zoo", entry: "Free" }
+                    ]
+                },
+                {
+                    day: 7,
+                    travel: {
+                        mode: "Train",
+                        details: "Cheran Express (12674)",
+                        source: "Coimbatore (CBE)",
+                        destination: "Muthukur (MUK)",
+                        departure: "10:00 AM",
+                        arrival: "6:00 PM",
+                        fare: 625
+                    },
+                    food: {
+                        approxCost: 800
+                    }
+                },
+                {
+                    day: 8,
+                    travel: {
+                        mode: "Local cab",
+                        fare: 1500
+                    },
+                    attractions: [
+                        { name: "Pulicat Lake", entry: "Free" },
+                        { name: "Nelapattu Bird Sanctuary", entry: 50 }
+                    ],
+                    food: {
+                        restaurant: "Local seafood restaurants",
+                        approxCost: 1200
+                    }
+                },
+                {
+                    day: 9,
+                    travel: {
+                        mode: "Bus or cab",
+                        fare: 1000
+                    },
+                    attractions: [
+                        { name: "Mypadu Beach", entry: "Free" },
+                        { name: "Kothapatnam Beach", entry: "Free" }
+                    ],
+                    food: {
+                        restaurant: "Beachside shacks and cafes",
+                        approxCost: 1000
+                    }
+                }
+            ],
+            budgetOverview: {
+                trainTickets: 12000,
+                busesCabs: 12500,
+                accommodation: 14000,
+                food: 14000,
+                entryTickets: 3500,
+                miscellaneous: 4000,
+                total: 60000
+            }
+        };
+
+        function planMyTrip() {
+            let tripDetails = "<h3>Trip Plan</h3>";
+            tripPlan.days.forEach(day => {
+                tripDetails += `<div class="day-header">Day ${day.day}:</div>`;
+                
+                if (day.travel) {
+                    tripDetails += ` 
+                        <p><strong>Travel Mode:</strong> ${day.travel.mode}</p>
+                        <p><strong>Details:</strong> ${day.travel.details || 'N/A'} (From ${day.travel.source || 'N/A'} to ${day.travel.destination || 'N/A'})</p>
+                        <p><strong>Departure:</strong> ${day.travel.departure || 'N/A'} | <strong>Arrival:</strong> ${day.travel.arrival || 'N/A'}</p>
+                        <p><strong>Fare:</strong> ₹${day.travel.fare || 0}</p>
+                        <p><a href="${day.travel.bookingLink || '#'}" target="_blank">Booking Link</a></p>
+                    `;
+                }
+                
+                if (day.accommodation) {
+                    tripDetails += `<p><strong>Accommodation Options:</strong></p><ul>`;
+                    day.accommodation.forEach(hotel => {
+                        tripDetails += `
+                            <li><strong>${hotel.name}</strong> (${hotel.location}) - ₹${hotel.cost} | Contact: ${hotel.contact}</li>
+                        `;
+                    });
+                    tripDetails += `</ul>`;
+                }
+                
+                if (day.food) {
+                    tripDetails += `<p><strong>Food:</strong> ${day.food.restaurant || 'N/A'} - Approx ₹${day.food.approxCost || 0}</p>`;
+                }
+                
+                if (day.attractions) {
+                    tripDetails += `<p><strong>Attractions:</strong></p><ul>`;
+                    day.attractions.forEach(attraction => {
+                        tripDetails += `
+                            <li><strong>${attraction.name}</strong> - Entry Fee: ₹${attraction.entry || 'Free'}</li>
+                        `;
+                    });
+                    tripDetails += `</ul>`;
+                }
+
+                tripDetails += `<hr>`;
+            });
+
+            tripDetails += `
+                <h3>Budget Overview:</h3>
+                <p><strong>Train Tickets:</strong> ₹${tripPlan.budgetOverview.trainTickets}</p>
+                <p><strong>Buses & Cabs:</strong> ₹${tripPlan.budgetOverview.busesCabs}</p>
+                <p><strong>Accommodation:</strong> ₹${tripPlan.budgetOverview.accommodation}</p>
+                <p><strong>Food:</strong> ₹${tripPlan.budgetOverview.food}</p>
+                <p><strong>Entry Tickets:</strong> ₹${tripPlan.budgetOverview.entryTickets}</p>
+                <p><strong>Miscellaneous:</strong> ₹${tripPlan.budgetOverview.miscellaneous}</p>
+                <p><strong>Total:</strong> ₹${tripPlan.budgetOverview.total}</p>
+            `;
+
+            document.getElementById("tripPlan").innerHTML = tripDetails;
+            document.getElementById("tripPlan").style.display = 'block';
+        }
+
+        // Automatically call planMyTrip when the page loads
+        window.onload = planMyTrip;
+    </script>
+</body>
+</html>
